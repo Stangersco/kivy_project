@@ -1,0 +1,89 @@
+
+<Settings>:
+    overlay_color: (0, 0, 0, 0)
+    size_hint: (.5, .8)
+    title: 'Settings'
+
+    BoxLayout:
+        spacing: 10
+        orientation: 'vertical'
+        BoxLayout:
+            Label:
+                size_hint_x: .9
+                text: 'curred buff speed:'
+            Label:
+                id: curred_buff_speed
+                text: ''
+
+        BoxLayout:
+            # size ball
+            orientation: 'vertical'
+            BoxLayout:
+                Label:
+                    size_hint_x: .9
+                    text: 'size ball:'
+                Label:
+                    id: size_ball
+                    text: ''
+            Slider:
+                id: size_ball_value
+                max: 100
+                min: 0
+                step: 0.1
+
+        BoxLayout:
+            # speed x
+            orientation: 'vertical'
+            BoxLayout:
+                Label:
+                    size_hint_x: .9
+                    text: 'start speed x:'
+                Label:
+                    id: speed_x
+                    text: ''
+            Slider:
+                id: speed_x_value
+                max: 100
+                min: 0
+                step: 1
+
+        BoxLayout:
+            # speed y
+            orientation: 'vertical'
+            BoxLayout:
+                Label:
+                    size_hint_x: .9
+                    text: 'speed y:'
+                Label:
+                    id: speed_y
+                    text: ''
+            Slider:
+                id: speed_y_value
+                max: 100
+                min: 0
+                step: 1
+
+        BoxLayout:
+            # buff speed
+            orientation: 'vertical'
+            BoxLayout:
+                Label:
+                    size_hint_x: .9
+                    text: 'buff speed:'
+                Label:
+                    id: buff_speed_ball
+                    text: ''
+            Slider:
+                id: buff_speed_value
+                max: 5
+                min: 0
+                step: 0.1
+
+        BoxLayout:
+            padding: 5
+            Button:
+                id: reset_button
+                text: 'apply and reset'
+                on_release:
+                    root.reset()
+
