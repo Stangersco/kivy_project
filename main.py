@@ -53,10 +53,10 @@ class GameBall(Widget):
 
 
 class Settings(Popup):
-    def __init__(self, ball, stop, **kwargs):
+    def __init__(self, ball, recall, **kwargs):
         super().__init__(**kwargs)
         self.ball = ball
-        self.stop = stop
+        self.recall = recall
 
         item = self.ids
         item.size_ball_value.bind(value=lambda _, value: self.dynamic_size(value))
@@ -94,24 +94,23 @@ class Settings(Popup):
 
         item.curred_buff_speed.text = '1.0'
 
-        self.stop()
-        self.ball.reset(speed=1, speed_up=speed_up,
-                        size_ball=size_ball, speed_x=speed_x, speed_y=speed_y)
+        self.recall(speed=1, speed_up=speed_up,
+                    size_ball=size_ball, speed_x=speed_x, speed_y=speed_y)
 
     def update_speed_buff(self):
         self.ids.curred_buff_speed.text = f'{self.ball.speed_ball:.1f}'
 
     def dynamic_size(self, value):
-        self.ids.size_ball.text = str(round(value, 2))
+        self.ids.size_ball.text = f'{value:.1f}'
 
     def dynamic_speed_x(self, value):
-        self.ids.speed_x.text = str(int(value))
+        self.ids.speed_x.text = f'{value:.0f}'
 
     def dynamic_speed_y(self, value):
-        self.ids.speed_y.text = str(int(value))
+        self.ids.speed_y.text = f'{value:.0f}'
 
     def dynamic_speed_up(self, value):
-        self.ids.buff_speed_ball.text = str(round(value, 2))
+        self.ids.buff_speed_ball.text = f'{value:.1f}'
 
 
 class GameApp(App):
@@ -119,11 +118,12 @@ class GameApp(App):
     ball = None
     settings = None
     settings_menu = None
+    clock = None
 
     def build(self):
         self.ball = GameBall(size_hint=(None, None))
 
-        self.settings_menu = Settings(ball=self.ball, stop=self.stop_anim)
+        self.settings_menu = Settings(ball=self.ball, recall=self.recall)
 
         self.settings = Button(background_normal='white', background_color=(1, 1, 1, .05),
                                size_hint=(None, None), size=(50, 50), pos_hint={'right': 1, 'top': 1},
@@ -138,7 +138,7 @@ class GameApp(App):
 
     def call_tick(self):
         time = self.tick()
-        Clock.schedule_once(lambda *args: self.call_tick(), timeout=time)
+        self.clock = Clock.schedule_once(lambda *args: self.call_tick(), timeout=time)
 
     def tick(self) -> float:
         self.settings_menu.update_speed_buff()
@@ -179,7 +179,7 @@ class GameApp(App):
 
         # up - left
         elif speed_y > 0 and speed_x < 0:
-            if abs((wid_y - y - self.ball.size_ball) / speed_y) < abs((x ) / speed_x):
+            if abs((wid_y - y - self.ball.size_ball) / speed_y) < abs((x) / speed_x):
                 time = abs((wid_y - self.ball.size_ball - y) / speed_y)
                 y = wid_y - self.ball.size_ball
                 x = x + (time * speed_x)
@@ -214,6 +214,13 @@ class GameApp(App):
 
     def stop_anim(self):
         self.anim.stop(self.ball)
+
+    def recall(self, speed=1, speed_up=0.1, size_ball=30, speed_x=100, speed_y=100):
+        self.clock.cancel()
+        self.anim.stop(self.ball)
+        self.ball.reset(speed=speed, speed_up=speed_up,
+                        size_ball=size_ball, speed_x=speed_x, speed_y=speed_y)
+        self.call_tick()
 
 
 if __name__ == '__main__':
